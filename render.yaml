@@ -1,0 +1,21 @@
+# Render Blueprint - EcoPulse Spring Boot Backend
+# Despliega automaticamente desde GitHub.
+# 1) Ve a dashboard.render.com -> New -> Blueprint
+# 2) Conecta tu repo (Johan-Salazar-Atencio/ecopulse)
+# 3) En "Environment Variables" de este servicio agrega:
+#    MONGODB_URI = mongodb+srv://<tu_usuario>:<tu_pass>@<tu_cluster>.mongodb.net/ecopulse?retryWrites=true&w=majority
+# 4) Click "Apply" y espera el deploy.
+
+services:
+  - type: web
+    name: ecopulse-backend
+    runtime: docker
+    repo: https://github.com/Johan-Salazar-Atencio/ecopulse
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/sensors/ping
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: PORT
+        value: 8080

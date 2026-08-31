@@ -1,28 +1,53 @@
 package com.ecopulse.controller;
 
 import com.ecopulse.model.SensorData;
+import com.ecopulse.repository.SensorDataRepository;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Random;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @RestController
 @RequestMapping("/api/sensors")
+@CrossOrigin(origins = {
+        "http://localhost:8080",
+        "http://localhost:3000",
+        "https://ecopulse.vercel.app",
+        "https://ecopulse-ecopulse.vercel.app"
+})
 public class SensorController {
 
-    private final Random random = new Random();
+    private final SensorDataRepository repository;
+
+    public SensorController(SensorDataRepository repository) {
+        this.repository = repository;
+    }
 
     @GetMapping("/live")
     public SensorData getLiveData() {
-        // Humedad realista: 45% - 75% (óptimo compostaje 50-60%)
+        SensorData data = generateRandomData();
+        // Persistir lectura en MongoDB Atlas
+        repository.save(data);
+        return data;
+    }
+
+    @GetMapping("/history")
+    public List<SensorData> getHistory() {
+        return repository.findTop10ByOrderByTimestampDesc();
+    }
+
+    @GetMapping("/ping")
+    public String pingDb() {
+        long count = repository.count();
+        return "OK - Mongo conectado, " + count + " lecturas guardadas";
+    }
+
+    private SensorData generateRandomData() {
         double humedad = Math.round((45 + ThreadLocalRandom.current().nextDouble() * 30) * 10.0) / 10.0;
-
-        // Temperatura realista: 35°C - 65°C (fase termófila 45-65)
         double temperatura = Math.round((35 + ThreadLocalRandom.current().nextDouble() * 30) * 10.0) / 10.0;
-
-        // Nivel de lixiviado: 10% - 95% (para probar alerta >80%)
         double nivelLiquido = Math.round((10 + ThreadLocalRandom.current().nextDouble() * 85) * 10.0) / 10.0;
 
         String estadoTemp;

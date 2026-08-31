@@ -14,3 +14,15 @@ mvnw.cmd
  imported.log
 ecopulse.log
 ecopulse-error.log
+
+# Credenciales y entornos locales - NUNCA subir
+.env
+.env.*
+!.env.example
+
+# Vercel
+.vercel/
+node_modules/
+
+# Mongo / datos locales
+data/

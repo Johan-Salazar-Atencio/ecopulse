@@ -1,13 +1,23 @@
 package com.ecopulse.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDateTime;
+
+@Document(collection = "sensor_readings")
 public class SensorData {
 
+    @Id
+    private String id;
     private double humedad;
     private double temperatura;
     private double nivelLiquido;
     private String estadoTemp;
+    private LocalDateTime timestamp;
 
     public SensorData() {
+        this.timestamp = LocalDateTime.now();
     }
 
     public SensorData(double humedad, double temperatura, double nivelLiquido, String estadoTemp) {
@@ -15,6 +25,15 @@ public class SensorData {
         this.temperatura = temperatura;
         this.nivelLiquido = nivelLiquido;
         this.estadoTemp = estadoTemp;
+        this.timestamp = LocalDateTime.now();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public double getHumedad() {
@@ -47,5 +66,13 @@ public class SensorData {
 
     public void setEstadoTemp(String estadoTemp) {
         this.estadoTemp = estadoTemp;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 }

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoPulse - Dashboard Compostadora Inteligente</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-leaf"></i>
+                    <h1>EcoPulse</h1>
+                </div>
+                <p class="subtitle">Compostadora Inteligente</p>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="ejecucion">
+                    <i class="fas fa-microchip"></i>
+                    <span>Compostadora en Ejecución</span>
+                </button>
+                <button class="nav-item" data-tab="nueva">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Agregar Nueva Composta</span>
+                </button>
+                <button class="nav-item" data-tab="aprende">
+                    <i class="fas fa-book-open"></i>
+                    <span>Aprende y Tutoriales</span>
+                </button>
+                <button class="nav-item" data-tab="ecogame">
+                    <i class="fas fa-gamepad"></i>
+                    <span>EcoGame</span>
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="dot online"></span> Sistema Online
+                </div>
+                <small>v1.0.0 • IoT Dashboard</small>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- TAB 1: Compostadora en Ejecución -->
+            <section id="tab-ejecucion" class="tab-content active">
+                <header class="tab-header">
+                    <h2><i class="fas fa-seedling"></i> Compostadora en Ejecución</h2>
+                    <p>Monitoreo en tiempo real • Actualización cada 3 segundos</p>
+                </header>
+
+                <div id="alert-container"></div>
+
+                <div class="sensor-grid">
+                    <div class="sensor-card humedad">
+                        <div class="sensor-icon"><i class="fas fa-tint"></i></div>
+                        <div class="sensor-info">
+                            <h3>Humedad</h3>
+                            <div class="sensor-value"><span id="humedad-value">--</span><small>%</small></div>
+                            <div class="progress-bar">
+                                <div id="humedad-bar" class="progress-fill humedad-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="sensor-range">Óptimo: 50-60%</span>
+                        </div>
+                    </div>
+
+                    <div class="sensor-card temperatura">
+                        <div class="sensor-icon"><i class="fas fa-temperature-high"></i></div>
+                        <div class="sensor-info">
+                            <h3>Temperatura</h3>
+                            <div class="sensor-value"><span id="temperatura-value">--</span><small>°C</small></div>
+                            <div class="progress-bar">
+                                <div id="temperatura-bar" class="progress-fill temp-fill" style="width: 0%"></div>
+                            </div>
+                            <span id="estado-temp" class="estado-badge">--</span>
+                        </div>
+                    </div>
+
+                    <div class="sensor-card lixiviado">
+                        <div class="sensor-icon"><i class="fas fa-water"></i></div>
+                        <div class="sensor-info">
+                            <h3>Nivel Lixiviado</h3>
+                            <div class="sensor-value"><span id="lixiviado-value">--</span><small>%</small></div>
+                            <div class="progress-bar">
+                                <div id="lixiviado-bar" class="progress-fill lixiviado-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="sensor-range">Alerta si &gt;80%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-panels">
+                    <div class="panel">
+                        <h4><i class="fas fa-chart-line"></i> Estado del Proceso</h4>
+                        <ul id="proceso-info">
+                            <li><strong>Última actualización:</strong> <span id="last-update">--</span></li>
+                            <li><strong>Tiempo activo:</strong> <span id="tiempo-activo">Calculando...</span></li>
+                            <li><strong>Próximo volteo recomendado:</strong> en 2 días</li>
+                        </ul>
+                    </div>
+                    <div class="panel">
+                        <h4><i class="fas fa-lightbulb"></i> Recomendaciones</h4>
+                        <p id="recomendacion">Esperando datos de sensores...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: Agregar Nueva Composta -->
+            <section id="tab-nueva" class="tab-content">
+                <header class="tab-header">
+                    <h2><i class="fas fa-plus"></i> Agregar Nueva Composta</h2>
+                    <p>Registra un nuevo lote de compostaje</p>
+                </header>
+
+                <form id="composta-form" class="composta-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nombre-lote"><i class="fas fa-tag"></i> Nombre del Lote</label>
+                            <input type="text" id="nombre-lote" placeholder="Ej: Lote Primavera 01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tipo-residuo"><i class="fas fa-recycle"></i> Tipo de Residuo Principal</label>
+                            <select id="tipo-residuo" required>
+                                <option value="">Seleccione...</option>
+                                <option value="Frutas y Verduras">Frutas y Verduras</option>
+                                <option value="Restos de Café">Restos de Café</option>
+                                <option value="Hojas Secas">Hojas Secas</option>
+                                <option value="Estiércol">Estiércol</option>
+                                <option value="Mixto Orgánico">Mixto Orgánico</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="peso"><i class="fas fa-weight-hanging"></i> Peso Inicial (kg)</label>
+                            <input type="number" id="peso" min="1" max="1000" step="0.1" placeholder="Ej: 25.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fecha-inicio"><i class="fas fa-calendar"></i> Fecha de Inicio</label>
+                            <input type="date" id="fecha-inicio" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="notas"><i class="fas fa-sticky-note"></i> Notas / Observaciones</label>
+                        <textarea id="notas" rows="3" placeholder="Ej: Mezcla 70% verdes / 30% marrones..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Registrar Lote</button>
+                </form>
+
+                <div class="lotes-container">
+                    <h3><i class="fas fa-layer-group"></i> Lotes Registrados</h3>
+                    <div id="lotes-list" class="lotes-list">
+                        <p class="empty-message">No hay lotes registrados aún. ¡Agrega el primero!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: Aprende y Tutoriales -->
+            <section id="tab-aprende" class="tab-content">
+                <header class="tab-header">
+                    <h2><i class="fas fa-graduation-cap"></i> Aprende y Tutoriales</h2>
+                    <p>Domina el arte del compostaje inteligente</p>
+                </header>
+
+                <div class="tutorial-grid">
+                    <article class="tutorial-card">
+                        <div class="tutorial-icon" style="background:#2E7D32"><i class="fas fa-balance-scale"></i></div>
+                        <h3>1. Relación Carbono/Nitrógeno</h3>
+                        <p>El equilibrio ideal es <strong>30:1</strong>. Materiales "verdes" (nitrógeno) como restos de frutas y "marrones" (carbono) como hojas secas.</p>
+                        <ul>
+                            <li>Verdes: 60% - cáscaras, césped fresco</li>
+                            <li>Marrones: 40% - cartón, paja, hojas</li>
+                        </ul>
+                    </article>
+                    <article class="tutorial-card">
+                        <div class="tutorial-icon" style="background:#0288D1"><i class="fas fa-tint"></i></div>
+                        <h3>2. Control de Humedad</h3>
+                        <p>Mantén la humedad entre <strong>50-60%</strong>. Técnica de la esponja: al apretar un puñado debe gotear levemente.</p>
+                        <ul>
+                            <li>Si está seco: riega y cubre</li>
+                            <li>Si está húmedo: añade marrones y voltea</li>
+                        </ul>
+                    </article>
+                    <article class="tutorial-card">
+                        <div class="tutorial-icon" style="background:#EF6C00"><i class="fas fa-fire"></i></div>
+                        <h3>3. Fases de Temperatura</h3>
+                        <p><strong>Mesófila (20-40°C):</strong> inicio, hongos y bacterias.<br><strong>Termófila (40-65°C):</strong> descomposición acelerada, elimina patógenos.<br><strong>Maduración (&lt;30°C):</strong> compost listo.</p>
+                    </article>
+                    <article class="tutorial-card">
+                        <div class="tutorial-icon" style="background:#5D4037"><i class="fas fa-recycle"></i></div>
+                        <h3>4. Manejo de Lixiviados</h3>
+                        <p>El líquido oscuro es fertilizante potente. Si el nivel supera <strong>80%</strong>, drena inmediatamente y diluye 1:10 para riego.</p>
+                        <ul>
+                            <li>No dejes que se acumule >3 días</li>
+                            <li>Recolección: cada 48h</li>
+                        </ul>
+                    </article>
+                    <article class="tutorial-card">
+                        <div class="tutorial-icon" style="background:#6A1B9A"><i class="fas fa-wind"></i></div>
+                        <h3>5. Aireación y Volteo</h3>
+                        <p>Voltea cada <strong>3-7 días</strong> en fase termófila. Introduce oxígeno, regula temperatura y evita malos olores (anaerobiosis).</p>
+                    </article>
+                    <article class="tutorial-card">
+                        <div class="tutorial-icon" style="background:#00897B"><i class="fas fa-check-double"></i></div>
+                        <h3>6. ¿Cuándo está listo?</h3>
+                        <p>Color marrón oscuro, olor a tierra húmeda, textura granulada, temperatura ambiente. Test de germinación: si germinan semillas, ¡éxito!</p>
+                    </article>
+                </div>
+
+                <div class="video-placeholder">
+                    <i class="fab fa-youtube"></i>
+                    <p>Próximamente: Video tutoriales paso a paso y webinars con expertos</p>
+                </div>
+            </section>
+
+            <!-- TAB 4: EcoGame -->
+            <section id="tab-ecogame" class="tab-content">
+                <header class="tab-header">
+                    <h2><i class="fas fa-gamepad"></i> EcoGame - Clasificador de Residuos</h2>
+                    <p>¡Aprende jugando! Arrastra o haz clic: ¿Compostable o No compostable?</p>
+                </header>
+
+                <div class="game-stats">
+                    <div class="stat"><i class="fas fa-star"></i> Puntaje: <span id="game-score">0</span></div>
+                    <div class="stat"><i class="fas fa-bullseye"></i> Aciertos: <span id="game-correct">0</span> / <span id="game-total">0</span></div>
+                    <div class="stat"><i class="fas fa-percentage"></i> Precisión: <span id="game-accuracy">0%</span></div>
+                </div>
+
+                <div id="game-card" class="game-card">
+                    <div id="game-item-emoji" class="game-emoji">🍎</div>
+                    <h3 id="game-item-name">Cáscara de Manzana</h3>
+                    <p id="game-item-desc">Resto de fruta fresca</p>
+                </div>
+
+                <div class="game-buttons">
+                    <button id="btn-compostable" class="btn-game compostable"><i class="fas fa-leaf"></i> Compostable</button>
+                    <button id="btn-no-compostable" class="btn-game no-compostable"><i class="fas fa-trash"></i> No Compostable</button>
+                </div>
+
+                <div id="game-feedback" class="game-feedback"></div>
+
+                <div class="game-bins">
+                    <div class="bin compost-bin">
+                        <i class="fas fa-seedling"></i>
+                        <h4>Compostable</h4>
+                        <small>Frutas, verduras, café, hojas, cartón sin tinta</small>
+                    </div>
+                    <div class="bin trash-bin">
+                        <i class="fas fa-ban"></i>
+                        <h4>No Compostable</h4>
+                        <small>Plástico, vidrio, metal, carne, lácteos, aceites</small>
+                    </div>
+                </div>
+
+                <button id="btn-reset-game" class="btn-secondary"><i class="fas fa-redo"></i> Reiniciar Juego</button>
+
+                <div class="game-history">
+                    <h4>Historial</h4>
+                    <ul id="game-history-list"></ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
