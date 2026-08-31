@@ -29,20 +29,32 @@ public class SensorController {
     @GetMapping("/live")
     public SensorData getLiveData() {
         SensorData data = generateRandomData();
-        // Persistir lectura en MongoDB Atlas
-        repository.save(data);
+        // Persistir lectura en MongoDB Atlas (si falla por firewall/red, igual retorna datos mock)
+        try {
+            repository.save(data);
+        } catch (Exception e) {
+            System.err.println("[EcoPulse] No se pudo guardar en Mongo (firewall/red): " + e.getMessage());
+        }
         return data;
     }
 
     @GetMapping("/history")
-    public List<SensorData> getHistory() {
-        return repository.findTop10ByOrderByTimestampDesc();
+    public Object getHistory() {
+        try {
+            return repository.findTop10ByOrderByTimestampDesc();
+        } catch (Exception e) {
+            return java.util.Map.of("warning", "Mongo no disponible (firewall Tecsup bloquea puerto 27017)", "error", e.getMessage());
+        }
     }
 
     @GetMapping("/ping")
     public String pingDb() {
-        long count = repository.count();
-        return "OK - Mongo conectado, " + count + " lecturas guardadas";
+        try {
+            long count = repository.count();
+            return "OK - Mongo conectado, " + count + " lecturas guardadas";
+        } catch (Exception e) {
+            return "WARN - Servidor OK pero Mongo no alcanzable: " + e.getMessage() + " | Tip: Tecsup bloquea puerto 27017, usa datos móviles o despliega en Render donde sí conecta";
+        }
     }
 
     private SensorData generateRandomData() {
