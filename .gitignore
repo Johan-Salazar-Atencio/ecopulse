@@ -1,0 +1,16 @@
+target/
+*.log
+*.class
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+.mvn/
+mvnw
+mvnw.cmd
+ imported.log
+ecopulse.log
+ecopulse-error.log
